@@ -1,5 +1,6 @@
 package student;
 
+import java.util.List;
 import rs.etf.sab.*;
 import rs.etf.sab.operations.CityOperations;
 import rs.etf.sab.operations.CourierOperations;
@@ -38,4 +39,24 @@ public class StudentMain {
 
         TestRunner.runTests();
     }
+    
+   /* public static void main(String[] args) {
+        
+        System.out.println("------------------------------------------------------------");
+        ba170390_CityOperations obj = new ba170390_CityOperations();
+       
+        
+        
+        
+        final String name = "Tokyo";
+        final String postalCode = "100";
+        final int rowId = obj.insertCity(name, postalCode);
+        System.out.println(rowId);
+                
+        final List<Integer> list = obj.getAllCities();
+        list.forEach(grad->{
+            System.out.println(grad);
+        });
+        
+    }*/
 }

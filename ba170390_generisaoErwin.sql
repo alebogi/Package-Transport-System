@@ -9,7 +9,7 @@ CREATE TABLE [City]
 ( 
 	[Name]               varchar(100)  NULL ,
 	[IdCity]             integer  IDENTITY  NOT NULL ,
-	[PostCode]           integer  NOT NULL 
+	[PostCode]           varchar(100)  NOT NULL 
 )
 go
 
