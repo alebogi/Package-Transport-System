@@ -1,6 +1,4 @@
-# SistemZaTransportPaketa
-
-Package Transport System
+# Package Transport System
 
 School project - subject Database Software Tools, june 2021.
 
