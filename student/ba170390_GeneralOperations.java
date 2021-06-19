@@ -21,17 +21,22 @@ public class ba170390_GeneralOperations implements GeneralOperations {
     @Override
     public void eraseAll() {
         Connection conn=DB.getInstance().getConnection();
-        String [] names = {"Admin", "City", "Courier", "CourierRequest", "District", "Package", "TransportOffer", "User", "Vehicle"}; 
-        String query="delete from ?";
-        try (PreparedStatement stmt=conn.prepareStatement(query);){
+        String [] names = {"Admin", "City", "Courier", "CourierRequest", "District", "Package", "User", "TransportOffer",  "Vehicle"}; 
+       
+        try {
+            
             for(int i = 0; i < names.length; i++){
+                String query="delete from [";
                 String name = names[i];
-                stmt.setString(1, name);
+                query += name;
+                query += "]";
+                PreparedStatement stmt=conn.prepareStatement(query);
                 stmt.executeUpdate();
+                stmt.close();
             }
 
         } catch (SQLException ex) {
-            //Logger.getLogger(ba170390_CityOperations.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ba170390_CityOperations.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
