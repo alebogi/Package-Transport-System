@@ -24,8 +24,8 @@ import rs.etf.sab.operations.PackageOperations;
 public class ba170390_PackageOperations implements PackageOperations {
     
     public static class ba170390_Pair<Integer, BigDecimal> implements Pair{
-        private int i;
-        private BigDecimal bd;
+        private final int i;
+        private final BigDecimal bd;
         
         public ba170390_Pair(int ii, BigDecimal bbdd){
             this.i = ii;
@@ -245,17 +245,66 @@ public class ba170390_PackageOperations implements PackageOperations {
 
     @Override
     public Date getAcceptanceTime(int packageId) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Date res = null;
+        
+        Connection conn=DB.getInstance().getConnection();
+        String query="select AcceptanceTime from Package where IdPckg=?";
+        try (PreparedStatement stmt=conn.prepareStatement(query);){    
+            stmt.setInt(1, packageId);
+            ResultSet rs = stmt.executeQuery();
+            if(rs.next()){
+                res = rs.getDate(1);
+                return res;
+            }else{
+                return null;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ba170390_PackageOperations.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return res;
     }
 
     @Override
     public List<Integer> getAllPackagesWithSpecificType(int type) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        List<Integer> list = new LinkedList<>();
+        
+        Connection conn=DB.getInstance().getConnection();
+        String query="select IdPckg from Package where Type=?";
+        try (PreparedStatement stmt=conn.prepareStatement(query);){
+            stmt.setInt(1, type);
+            ResultSet rs = stmt.executeQuery();
+            while(rs.next()){
+                list.add(rs.getInt(1));
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ba170390_PackageOperations.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        if(list.isEmpty())
+            return null;
+        return list;
     }
 
     @Override
     public List<Integer> getAllPackages() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        List<Integer> list = new LinkedList<>();
+        
+        Connection conn=DB.getInstance().getConnection();
+        String query="select IdPckg from Package";
+        try (PreparedStatement stmt=conn.prepareStatement(query);){
+            ResultSet rs = stmt.executeQuery();
+            while(rs.next()){
+                list.add(rs.getInt(1));
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ba170390_PackageOperations.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        if(list.isEmpty())
+            return null;
+        
+        return list;
     }
 
     @Override

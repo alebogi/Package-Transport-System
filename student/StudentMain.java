@@ -1,6 +1,7 @@
 package student;
 
 import java.math.BigDecimal;
+import java.sql.Date;
 import java.util.List;
 import rs.etf.sab.*;
 import rs.etf.sab.operations.CityOperations;
@@ -46,7 +47,7 @@ public class StudentMain {
         System.out.println("------------------------------------------------------------");
         ba170390_PackageOperations obj = new ba170390_PackageOperations();
        
-        BigDecimal tmp = obj.getPriceOfDelivery(1);
+        Date tmp = obj.getAcceptanceTime(1);
         if( null == tmp){
             System.out.println("null je");
         }else 
