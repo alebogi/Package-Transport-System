@@ -43,20 +43,23 @@ public class StudentMain {
    /* public static void main(String[] args) {
         
         System.out.println("------------------------------------------------------------");
-        ba170390_CityOperations obj = new ba170390_CityOperations();
+        ba170390_UserOperations obj = new ba170390_UserOperations();
        
         
+        final String username = "rope";
+        final String firstName = "Pero";
+        final String lastName = "Simic";
+        final String password = "tralalalala123";
         
+        if(obj.insertUser(username, firstName, lastName, password)){
+            System.out.println("vaistinu");
+        }else{
+            System.out.println("no");
+        }
+        String username = "rope";
+        System.out.println(obj.declareAdmin(username));
+        System.out.println(obj.declareAdmin(username));
         
-        final String name = "Tokyo";
-        final String postalCode = "100";
-        final int rowId = obj.insertCity(name, postalCode);
-        System.out.println(rowId);
-                
-        final List<Integer> list = obj.getAllCities();
-        list.forEach(grad->{
-            System.out.println(grad);
-        });
         
     }*/
 }

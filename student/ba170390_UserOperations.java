@@ -11,6 +11,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import rs.etf.sab.operations.UserOperations;
@@ -65,7 +67,48 @@ public class ba170390_UserOperations implements UserOperations {
 
     @Override
     public int declareAdmin(String username) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        final int SUCCESS = 0;
+        final int ALREADY_ADMIN = 1;
+        final int USER_DOESNT_EXISTS = 2;
+        final int ERROR = -1;
+        
+        Connection conn=DB.getInstance().getConnection();
+        String query="select Username from [User]\n" +
+                     "where Username=?";
+        try (PreparedStatement stmtCheckUser=conn.prepareStatement(query);){  
+            stmtCheckUser.setString(1, username);
+            ResultSet rsCheckUser = stmtCheckUser.executeQuery();
+            if(rsCheckUser.next()){
+                //check if already admin
+                query="select AdminUsername from [Admin]\n" +
+                      "where AdminUsername=?";
+                PreparedStatement stmtCheckIfAdmin=conn.prepareStatement(query);
+                stmtCheckIfAdmin.setString(1, username);
+                ResultSet rsCheckIfAdmin = stmtCheckIfAdmin.executeQuery();
+                if(rsCheckIfAdmin.next()){
+                    stmtCheckIfAdmin.close();
+                    return ALREADY_ADMIN;
+                }else{
+                    //declare admin
+                    stmtCheckIfAdmin.close();
+                    query = "insert into [Admin] values (?)";
+                    PreparedStatement stmtDeclare=conn.prepareStatement(query);
+                    stmtDeclare.setString(1, username);
+                    int tmp = stmtDeclare.executeUpdate();
+                    stmtDeclare.close();
+                    if(tmp == 1){
+                        return SUCCESS;
+                    }
+                }
+                
+               
+            }else{
+                return USER_DOESNT_EXISTS; 
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ba170390_UserOperations.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return ERROR;
     }
 
     @Override
@@ -76,7 +119,24 @@ public class ba170390_UserOperations implements UserOperations {
             return null;
         
         Connection conn=DB.getInstance().getConnection();
-        String query="select NumOfSentPckgs\n" +
+        String query="select Username from [User]\n" +
+                     "where Username=?";
+        try (PreparedStatement stmtCheckUser=conn.prepareStatement(query);){  
+            for(int i = 0; i < userNames.length; i++){
+                stmtCheckUser.setString(1, userNames[i]);
+                ResultSet rsCheckUser = stmtCheckUser.executeQuery();
+                if(!rsCheckUser.next()){
+                    return null;
+                }
+            }
+       
+        } catch (SQLException ex) {
+           // Logger.getLogger(ba170390_CityOperations.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        
+        
+        query="select NumOfSentPckgs\n" +
                     "from [User]\n" +
                     "where Username=?";
         try (PreparedStatement stmt=conn.prepareStatement(query);){
