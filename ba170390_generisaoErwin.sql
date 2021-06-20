@@ -1,4 +1,31 @@
 
+DROP TABLE [Admin]
+go
+
+DROP TABLE [CourierRequest]
+go
+
+DROP TABLE [TransportOffer]
+go
+
+DROP TABLE [Package]
+go
+
+DROP TABLE [District]
+go
+
+DROP TABLE [City]
+go
+
+DROP TABLE [Courier]
+go
+
+DROP TABLE [User]
+go
+
+DROP TABLE [Vehicle]
+go
+
 CREATE TABLE [Admin]
 ( 
 	[AdminUsername]      varchar(100)  NOT NULL 
