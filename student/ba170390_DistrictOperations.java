@@ -119,7 +119,10 @@ public class ba170390_DistrictOperations implements DistrictOperations {
            // Logger.getLogger(ba170390_CityOperations.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        return list;
+        if(list.size() > 0)
+            return list;
+        else
+            return null;
     }
 
     @Override
