@@ -17,7 +17,7 @@ import rs.etf.sab.tests.TestRunner;
 
 public class StudentMain {
 
-    public static void main(String[] args) {
+   /* public static void main(String[] args) {
         CityOperations cityOperations = new ba170390_CityOperations(); 
         DistrictOperations districtOperations = new ba170390_DistrictOperations(); 
         CourierOperations courierOperations = new ba170390_CourierOperations(); 
@@ -38,28 +38,16 @@ public class StudentMain {
                 packageOperations);
 
         TestRunner.runTests();
-    }
+    }*/
     
-   /* public static void main(String[] args) {
+    public static void main(String[] args) {
         
         System.out.println("------------------------------------------------------------");
-        ba170390_UserOperations obj = new ba170390_UserOperations();
+        ba170390_CourierRequestOperation obj = new ba170390_CourierRequestOperation();
        
         
-        final String username = "rope";
-        final String firstName = "Pero";
-        final String lastName = "Simic";
-        final String password = "tralalalala123";
-        
-        if(obj.insertUser(username, firstName, lastName, password)){
-            System.out.println("vaistinu");
-        }else{
-            System.out.println("no");
-        }
-        String username = "rope";
-        System.out.println(obj.declareAdmin(username));
-        System.out.println(obj.declareAdmin(username));
+        obj.grantRequest("mika");
         
         
-    }*/
+    }
 }

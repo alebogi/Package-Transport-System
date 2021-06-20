@@ -101,7 +101,7 @@ public class ba170390_CourierRequestOperation implements CourierRequestOperation
         boolean res = false;
         
         Connection conn=DB.getInstance().getConnection();
-        String query="{ call spGrantRequest(?) }";
+        String query="exec spGrantRequest ?";
         try (CallableStatement stmt=conn.prepareCall(query);){
             stmt.setString(1, username);
             int tmp = stmt.executeUpdate();

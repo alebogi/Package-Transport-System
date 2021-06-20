@@ -45,8 +45,12 @@ CREATE TABLE [Courier]
 	[NumOfDeliveredPckgs] integer  NULL 
 	CONSTRAINT [zero_205055169]
 		 DEFAULT  0,
-	[Profit]             integer  NULL ,
+	[Profit]             integer  NULL 
+	CONSTRAINT [zero_1095524606]
+		 DEFAULT  0,
 	[Status]             integer  NULL 
+	CONSTRAINT [zero_1329484285]
+		 DEFAULT  0
 	CONSTRAINT [Status_0_or_1_1284597617]
 		CHECK  ( Status BETWEEN 0 AND 1 ),
 	[CourierUsername]    varchar(100)  NOT NULL ,
