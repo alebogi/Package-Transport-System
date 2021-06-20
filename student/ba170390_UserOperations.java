@@ -60,7 +60,7 @@ public class ba170390_UserOperations implements UserOperations {
             if(tmp == 1)
                 res = true;
         } catch (SQLException ex) {
-            //Logger.getLogger(ba170390_CityOperations.class.getName()).log(Level.SEVERE, null, ex);
+            //Logger.getLogger(ba170390_UserOperations.class.getName()).log(Level.SEVERE, null, ex);
         }
         return res;
     }
@@ -106,7 +106,7 @@ public class ba170390_UserOperations implements UserOperations {
                 return USER_DOESNT_EXISTS; 
             }
         } catch (SQLException ex) {
-            Logger.getLogger(ba170390_UserOperations.class.getName()).log(Level.SEVERE, null, ex);
+            //Logger.getLogger(ba170390_UserOperations.class.getName()).log(Level.SEVERE, null, ex);
         }
         return ERROR;
     }
@@ -131,7 +131,7 @@ public class ba170390_UserOperations implements UserOperations {
             }
        
         } catch (SQLException ex) {
-           // Logger.getLogger(ba170390_CityOperations.class.getName()).log(Level.SEVERE, null, ex);
+           // Logger.getLogger(ba170390_UserOperations.class.getName()).log(Level.SEVERE, null, ex);
         }
         
         
@@ -150,7 +150,7 @@ public class ba170390_UserOperations implements UserOperations {
             }
 
         } catch (SQLException ex) {
-            //Logger.getLogger(ba170390_CityOperations.class.getName()).log(Level.SEVERE, null, ex);
+            //Logger.getLogger(ba170390_UserOperations.class.getName()).log(Level.SEVERE, null, ex);
         }
         
         return sum;
@@ -174,7 +174,7 @@ public class ba170390_UserOperations implements UserOperations {
             }
 
         } catch (SQLException ex) {
-            //Logger.getLogger(ba170390_CityOperations.class.getName()).log(Level.SEVERE, null, ex);
+            //Logger.getLogger(ba170390_UserOperations.class.getName()).log(Level.SEVERE, null, ex);
         }
         return numDeleted;
     }
@@ -191,7 +191,7 @@ public class ba170390_UserOperations implements UserOperations {
                 list.add(rs.getString(1));
             }
         } catch (SQLException ex) {
-           // Logger.getLogger(ba170390_CityOperations.class.getName()).log(Level.SEVERE, null, ex);
+           // Logger.getLogger(ba170390_UserOperations.class.getName()).log(Level.SEVERE, null, ex);
         }
         
         return list;

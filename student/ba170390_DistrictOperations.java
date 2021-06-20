@@ -11,6 +11,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import rs.etf.sab.operations.DistrictOperations;
 
 /**
@@ -36,7 +38,7 @@ public class ba170390_DistrictOperations implements DistrictOperations {
                 id = rs.getInt(1);
             }
         } catch (SQLException ex) {
-            //Logger.getLogger(ba170390_CityOperations.class.getName()).log(Level.SEVERE, null, ex);
+            //Logger.getLogger(ba170390_DistrictOperations.class.getName()).log(Level.SEVERE, null, ex);
         }
         return id;
     }
@@ -57,7 +59,7 @@ public class ba170390_DistrictOperations implements DistrictOperations {
             }
 
         } catch (SQLException ex) {
-            //Logger.getLogger(ba170390_CityOperations.class.getName()).log(Level.SEVERE, null, ex);
+            //Logger.getLogger(ba170390_DistrictOperations.class.getName()).log(Level.SEVERE, null, ex);
         }
         
         return numDeleted;    
@@ -75,7 +77,7 @@ public class ba170390_DistrictOperations implements DistrictOperations {
             if(tmp == 1)
                 res = true;
         } catch (SQLException ex) {
-            //Logger.getLogger(ba170390_CityOperations.class.getName()).log(Level.SEVERE, null, ex);
+            //Logger.getLogger(ba170390_DistrictOperations.class.getName()).log(Level.SEVERE, null, ex);
         }
         return res;
     }
@@ -97,7 +99,7 @@ public class ba170390_DistrictOperations implements DistrictOperations {
             numDeleted += stmt.executeUpdate();
 
         } catch (SQLException ex) {
-            //Logger.getLogger(ba170390_CityOperations.class.getName()).log(Level.SEVERE, null, ex);
+            //Logger.getLogger(ba170390_DistrictOperations.class.getName()).log(Level.SEVERE, null, ex);
         }
         
         return numDeleted;
@@ -116,7 +118,7 @@ public class ba170390_DistrictOperations implements DistrictOperations {
                 list.add(rs.getInt(1));
             }
         } catch (SQLException ex) {
-           // Logger.getLogger(ba170390_CityOperations.class.getName()).log(Level.SEVERE, null, ex);
+           // Logger.getLogger(ba170390_DistrictOperations.class.getName()).log(Level.SEVERE, null, ex);
         }
         
         if(list.size() > 0)
@@ -137,7 +139,7 @@ public class ba170390_DistrictOperations implements DistrictOperations {
                 list.add(rs.getInt(1));
             }
         } catch (SQLException ex) {
-           // Logger.getLogger(ba170390_CityOperations.class.getName()).log(Level.SEVERE, null, ex);
+            //Logger.getLogger(ba170390_DistrictOperations.class.getName()).log(Level.SEVERE, null, ex);
         }
         
         return list;

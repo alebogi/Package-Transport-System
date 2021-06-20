@@ -36,7 +36,7 @@ public class ba170390_GeneralOperations implements GeneralOperations {
             }
 
         } catch (SQLException ex) {
-            Logger.getLogger(ba170390_CityOperations.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ba170390_GeneralOperations.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
