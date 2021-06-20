@@ -93,7 +93,42 @@ public class ba170390_PackageOperations implements PackageOperations {
 
     @Override
     public boolean acceptAnOffer(int offerId) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        boolean res = false;
+        
+        String courier = "";
+        BigDecimal pricePercentage = BigDecimal.ZERO;
+        int idPckg = -1;
+        
+        Connection conn=DB.getInstance().getConnection();
+        String queryGetOffer="select PricePercentage, CourierUsername, IdPckg from TransportOffer where IdOffer=?";
+        String queryUpdate="update Package\n" +
+                    "set CourierUsername=?, AcceptanceTime=CURRENT_TIMESTAMP, Status=1, Price=?\n" +
+                    "where IdPckg=?";
+        try (PreparedStatement stmtGetOffer=conn.prepareStatement(queryGetOffer);
+                PreparedStatement stmtUpdate=conn.prepareStatement(queryUpdate);){
+            stmtGetOffer.setInt(1, offerId);
+            ResultSet rsGetOffer = stmtGetOffer.executeQuery();
+            if(rsGetOffer.next()){
+                courier = rsGetOffer.getString("CourierUsername");
+                pricePercentage = rsGetOffer.getBigDecimal("PricePercentage");
+                idPckg = rsGetOffer.getInt("IdPckg");
+            }else{
+                return false;
+            }
+                    
+            stmtUpdate.setString(1, courier);
+            stmtUpdate.setBigDecimal(2, pricePercentage);
+            stmtUpdate.setInt(3, idPckg);
+            int tmp = stmtUpdate.executeUpdate();
+            if(tmp == 1)
+                res = true;
+            
+            //offers for this pckg will be deleted by trigger
+        } catch (SQLException ex) {
+            
+            Logger.getLogger(ba170390_PackageOperations.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return res;
     }
 
     @Override
