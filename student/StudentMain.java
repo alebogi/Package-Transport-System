@@ -1,5 +1,6 @@
 package student;
 
+import java.math.BigDecimal;
 import java.util.List;
 import rs.etf.sab.*;
 import rs.etf.sab.operations.CityOperations;
@@ -43,10 +44,15 @@ public class StudentMain {
     public static void main(String[] args) {
         
         System.out.println("------------------------------------------------------------");
-        ba170390_CourierRequestOperation obj = new ba170390_CourierRequestOperation();
+        ba170390_PackageOperations obj = new ba170390_PackageOperations();
        
+        BigDecimal tmp = obj.getPriceOfDelivery(1);
+        if( null == tmp){
+            System.out.println("null je");
+        }else 
+                System.out.println(tmp);
+                
         
-        obj.grantRequest("mika");
         
         
     }

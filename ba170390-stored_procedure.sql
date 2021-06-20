@@ -17,4 +17,21 @@ BEGIN
 	end
 	
 END
+
+GO
+
+CREATE PROCEDURE spDeleteRequest
+	@username varchar(100)
+AS
+BEGIN
+	declare @tmpUsername varchar(100)
+
+	set @tmpUsername= (select Username from CourierRequest where Username=@username)
+
+	if(@tmpUsername = @username)
+	begin		
+		delete from CourierRequest where Username=@username
+	end
+	
+END
 GO
