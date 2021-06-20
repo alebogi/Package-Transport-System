@@ -17,17 +17,17 @@ import rs.etf.sab.operations.PackageOperations;
 public class ba170390_PackageOperations implements PackageOperations {
 
     @Override
-    public int insertPackage(int i, int i1, String string, int i2, BigDecimal bd) {
+    public int insertPackage(int districtFrom, int districtTo, String userName, int packageType, BigDecimal weight) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public int insertTransportOffer(String string, int i, BigDecimal bd) {
+    public int insertTransportOffer(String couriersUserName, int packageId, BigDecimal pricePercentage) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public boolean acceptAnOffer(int i) {
+    public boolean acceptAnOffer(int offerId) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -37,42 +37,42 @@ public class ba170390_PackageOperations implements PackageOperations {
     }
 
     @Override
-    public List<Pair<Integer, BigDecimal>> getAllOffersForPackage(int i) {
+    public List<Pair<Integer, BigDecimal>> getAllOffersForPackage(int packageId) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public boolean deletePackage(int i) {
+    public boolean deletePackage(int packageId) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public boolean changeWeight(int i, BigDecimal bd) {
+    public boolean changeWeight(int packageId, BigDecimal newWeight) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public boolean changeType(int i, int i1) {
+    public boolean changeType(int packageId, int newType) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Integer getDeliveryStatus(int i) {
+    public Integer getDeliveryStatus(int packageId) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public BigDecimal getPriceOfDelivery(int i) {
+    public BigDecimal getPriceOfDelivery(int packageId) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Date getAcceptanceTime(int i) {
+    public Date getAcceptanceTime(int packageId) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public List<Integer> getAllPackagesWithSpecificType(int i) {
+    public List<Integer> getAllPackagesWithSpecificType(int type) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -82,12 +82,12 @@ public class ba170390_PackageOperations implements PackageOperations {
     }
 
     @Override
-    public List<Integer> getDrive(String string) {
+    public List<Integer> getDrive(String courierUsername) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public int driveNextPackage(String string) {
+    public int driveNextPackage(String courierUserName) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
