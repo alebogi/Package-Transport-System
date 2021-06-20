@@ -21,7 +21,7 @@ public class ba170390_GeneralOperations implements GeneralOperations {
     @Override
     public void eraseAll() {
         Connection conn=DB.getInstance().getConnection();
-        String [] names = {"Admin", "City", "Courier", "CourierRequest", "District", "Package", "User", "TransportOffer",  "Vehicle"}; 
+        String [] names = {"Admin", "Courier", "CourierRequest", "Package", "User", "TransportOffer",  "Vehicle", "District", "City"}; 
        
         try {
             
