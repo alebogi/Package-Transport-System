@@ -90,9 +90,88 @@ public class ba170390_PackageOperations implements PackageOperations {
         }
         return id;
     }
+    
+    private double euclidean(final int x1, final int y1, final int x2, final int y2) {
+        return Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
+    }
+    
+    private BigDecimal getPackagePrice(final int type, final BigDecimal weight, final double distance, BigDecimal percentage) {
+        percentage = percentage.divide(new BigDecimal(100));
+        switch (type) {
+            case 0: {
+                return new BigDecimal(10.0 * distance).multiply(percentage.add(new BigDecimal(1)));
+            }
+            case 1: {
+                return new BigDecimal((25.0 + weight.doubleValue() * 100.0) * distance).multiply(percentage.add(new BigDecimal(1)));
+            }
+            case 2: {
+                return new BigDecimal((75.0 + weight.doubleValue() * 300.0) * distance).multiply(percentage.add(new BigDecimal(1)));
+            }
+            default: {
+                return null;
+            }
+        }
+    }
 
-    public BigDecimal calculatePrice(int idPckg){
-        return null;
+    public double calculateDistance(int idDistrFrom, int idDistrTo){
+        double res = 0; 
+        int x1, y1, x2, y2;
+        Connection conn=DB.getInstance().getConnection();
+        String queryFrom = "select * from District where IdDistr=?";
+        String queryTo = "select * from District where IdDistr=?";
+        try (PreparedStatement stmtFrom=conn.prepareStatement(queryFrom);
+                PreparedStatement stmtTo=conn.prepareStatement(queryTo);){    
+            stmtFrom.setInt(1, idDistrFrom);
+            stmtTo.setInt(1, idDistrTo);
+            ResultSet rsFrom = stmtFrom.executeQuery();
+            ResultSet rsTo = stmtTo.executeQuery();
+            if(rsFrom.next()){
+                x1 = rsFrom.getInt("xCord");
+                y1 = rsFrom.getInt("yCord");
+            }else{
+                return -1;
+            }
+            if(rsTo.next()){
+                x2 = rsTo.getInt("xCord");
+                y2 = rsTo.getInt("yCord");       
+            }else{
+                return -1;
+            }
+            
+            res = euclidean(x1, y1, x2, y2);
+        } catch (SQLException ex) {
+            Logger.getLogger(ba170390_PackageOperations.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return res;
+    }
+    
+    public BigDecimal calculatePrice(int idPckg, BigDecimal pricePercentage){
+        BigDecimal res = BigDecimal.ZERO;
+        
+        Connection conn=DB.getInstance().getConnection();
+        String query="select * from Package where IdPckg=?";
+        try (PreparedStatement stmt=conn.prepareStatement(query);){    
+            stmt.setInt(1, idPckg);
+            ResultSet rs = stmt.executeQuery();
+            if(rs.next()){
+                BigDecimal weight = rs.getBigDecimal("Weight");
+                int type = rs.getInt("Type");
+                int distrFromId = rs.getInt("DistrictFrom");
+                int distrToId = rs.getInt("DistrictTo");
+                
+                final double dist = calculateDistance(distrFromId, distrToId);
+                
+                res = getPackagePrice(type, weight, dist, pricePercentage);
+                
+            }else{
+                return null;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ba170390_PackageOperations.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return res;
     }
     
     @Override
@@ -102,6 +181,7 @@ public class ba170390_PackageOperations implements PackageOperations {
         String courier = "";
         BigDecimal pricePercentage = BigDecimal.ZERO;
         int idPckg = -1;
+        BigDecimal price = BigDecimal.ZERO;
         
         Connection conn=DB.getInstance().getConnection();
         String queryGetOffer="select PricePercentage, CourierUsername, IdPckg from TransportOffer where IdOffer=?";
@@ -113,18 +193,16 @@ public class ba170390_PackageOperations implements PackageOperations {
             stmtGetOffer.setInt(1, offerId);
             ResultSet rsGetOffer = stmtGetOffer.executeQuery();
             if(rsGetOffer.next()){
-                courier = rsGetOffer.getString("CourierUsername");
-                
-                calculatePrice(idPckg);
-                
+                courier = rsGetOffer.getString("CourierUsername");        
                 pricePercentage = rsGetOffer.getBigDecimal("PricePercentage");
+                price = calculatePrice(idPckg, pricePercentage);
                 idPckg = rsGetOffer.getInt("IdPckg");
             }else{
                 return false;
             }
                     
             stmtUpdate.setString(1, courier);
-            stmtUpdate.setBigDecimal(2, pricePercentage);
+            stmtUpdate.setBigDecimal(2, price);
             stmtUpdate.setInt(3, idPckg);
             int tmp = stmtUpdate.executeUpdate();
             if(tmp == 1)

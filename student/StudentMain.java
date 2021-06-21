@@ -42,19 +42,26 @@ public class StudentMain {
         TestRunner.runTests();
     }*/
     
-    public static void main(String[] args) {
+   public static void main(String[] args) {
         
         System.out.println("------------------------------------------------------------");
-        ba170390_PackageOperations obj = new ba170390_PackageOperations();
+        ba170390_UserOperations obj = new ba170390_UserOperations();
+        ba170390_VehicleOperations v = new ba170390_VehicleOperations();
+        ba170390_CourierRequestOperation cr = new ba170390_CourierRequestOperation();
        
-        Date tmp = obj.getAcceptanceTime(1);
-        if( null == tmp){
-            System.out.println("null je");
-        }else 
-                System.out.println(tmp);
+ 
                 
-        
-        
+        final String courierUsername = "svetkis";
+        final String firstName = "Svetislav";
+        final String lastName = "Kisprdilov";
+        final String password = "sisatovac123";
+        obj.insertUser(courierUsername, firstName, lastName, password);
+        final String licencePlate = "BG323WE";
+        final int fuelType = 0;
+        final BigDecimal fuelConsumption = new BigDecimal(8.3);
+        v.insertVehicle(licencePlate, fuelType, fuelConsumption);
+        cr.insertCourierRequest(courierUsername, licencePlate);
+        cr.grantRequest(courierUsername);
         
     }
 }

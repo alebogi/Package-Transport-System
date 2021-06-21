@@ -78,7 +78,7 @@ go
 CREATE TABLE [Package]
 ( 
 	[IdPckg]             integer  IDENTITY  NOT NULL ,
-	[Weight]             integer  NULL ,
+	[Weight]             decimal(10,3)  NULL ,
 	[Type]               integer  NULL 
 	CONSTRAINT [Type_0_to_2_132330555]
 		CHECK  ( Type BETWEEN 0 AND 2 ),
