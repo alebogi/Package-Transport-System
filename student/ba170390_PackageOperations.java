@@ -91,6 +91,10 @@ public class ba170390_PackageOperations implements PackageOperations {
         return id;
     }
 
+    public BigDecimal calculatePrice(int idPckg){
+        return null;
+    }
+    
     @Override
     public boolean acceptAnOffer(int offerId) {
         boolean res = false;
@@ -110,6 +114,9 @@ public class ba170390_PackageOperations implements PackageOperations {
             ResultSet rsGetOffer = stmtGetOffer.executeQuery();
             if(rsGetOffer.next()){
                 courier = rsGetOffer.getString("CourierUsername");
+                
+                calculatePrice(idPckg);
+                
                 pricePercentage = rsGetOffer.getBigDecimal("PricePercentage");
                 idPckg = rsGetOffer.getInt("IdPckg");
             }else{
