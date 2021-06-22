@@ -24,7 +24,7 @@ import rs.etf.sab.operations.PackageOperations;
 public class ba170390_PackageOperations implements PackageOperations {
     
    // private static int onDelivery = -1;
-    private static boolean deliveryStarted = false;
+   // private static boolean deliveryStarted = false;
     
     public static class ba170390_Pair<Integer, BigDecimal> implements Pair{
         private final int i;
@@ -509,18 +509,33 @@ public class ba170390_PackageOperations implements PackageOperations {
         return res;
     }
     
-    /**
-     * sort pckgs by acceptance time -fcfs
-     * @return first in the list
-     */
-    public int sortPckgsAndGetFirst(String courierUserName){
-        int res = -1;
+    public String getCourierCar(String courierUserName){
+        String res = "";
+        Connection conn=DB.getInstance().getConnection();
+        String query="select LicencePlateNum from Courier where CourierUsername=?";
+        try (PreparedStatement stmt=conn.prepareStatement(query);){
+            stmt.setString(1, courierUserName);
+            ResultSet rs = stmt.executeQuery();
+            if(rs.next()){
+                res = rs.getString("LicencePlateNum");
+            }else{
+                return "";
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ba170390_PackageOperations.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
+        return res;
+    }
+    
+ 
+    public int sortPckgsAndGetFirst(String courierUserName, int deliveryStarted){
+        int res = -1;
+             
         Connection conn=DB.getInstance().getConnection();
         
-        if(!deliveryStarted){ //svim paketima za datog kurira stavimo da su pokupljeni (status=2), posto je voznja pocela
-            deliveryStarted = true;
-            if(!startDeliveryForCourier(courierUserName)){
+        if(deliveryStarted == 0){ //svim paketima za datog kurira stavimo da su pokupljeni (status=2), posto je voznja pocela           
+            if(!startDeliveryForCourier(courierUserName)){ //pocni voznju, ako se vrati false nemoguce je poceti voznju trenutno
                 return -1;
             }
             String query1="update Package\n" +
@@ -551,6 +566,32 @@ public class ba170390_PackageOperations implements PackageOperations {
         return res;
     }
     
+    public BigDecimal calculateProfit(String courierUserName){
+         //cena isporuke - trosak voznje
+         
+         
+        return BigDecimal.ZERO;
+    }
+    
+    
+    public void updateCourier(String courierUserName){
+        BigDecimal profit = BigDecimal.ZERO;       
+        profit = calculateProfit(courierUserName);  
+        
+        Connection conn=DB.getInstance().getConnection();
+        String query="update Courier\n" +
+                    "set NumOfDeliveredPckgs=NumOfDeliveredPckgs+1, Profit=?\n" +
+                    "where CourierUsername=?";
+        try (PreparedStatement stmt=conn.prepareStatement(query);){
+            stmt.setBigDecimal(1, profit);
+            stmt.setString(2, courierUserName);
+            stmt.executeUpdate();          
+        } catch (SQLException ex) {
+            Logger.getLogger(ba170390_PackageOperations.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    
     public void deliverPckg(int idPckg){
         Connection conn=DB.getInstance().getConnection();
         String query1="update Package\n" +
@@ -563,6 +604,7 @@ public class ba170390_PackageOperations implements PackageOperations {
             Logger.getLogger(ba170390_PackageOperations.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+       
 
     public void stopDelivery(String courierUserName){
         Connection conn=DB.getInstance().getConnection();
@@ -575,6 +617,28 @@ public class ba170390_PackageOperations implements PackageOperations {
         } catch (SQLException ex) {
             Logger.getLogger(ba170390_PackageOperations.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
+    }
+    
+    
+    
+    public int getCourierStatus(String courierUserName){
+        int res = -1;
+        Connection conn=DB.getInstance().getConnection();
+        String query="select Status from Courier where CourierUsername=?";
+        try (PreparedStatement stmt=conn.prepareStatement(query);){
+            stmt.setString(1, courierUserName);
+            ResultSet rs = stmt.executeQuery();
+            if(rs.next()){
+                res = rs.getInt("Status");
+            }else{
+                return -1;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ba170390_PackageOperations.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return res;
     }
     
     @Override
@@ -582,26 +646,21 @@ public class ba170390_PackageOperations implements PackageOperations {
         final int NOTHING_TO_DRIVE = -1;
         final int OTHER = -2;
         
-        if(!deliveryStarted){ //drive hasnt started yet
-            
-        }else{ //drive already started
-            
-        }
-        
-        int idPckg = sortPckgsAndGetFirst(courierUserName);
+        int deliveryStarted = getCourierStatus(courierUserName);
+               
+        int idPckg = sortPckgsAndGetFirst(courierUserName, deliveryStarted);
         if(idPckg > 0){ //ima paketa za dostavljanje i kurir moze da ih dostavlja
             deliverPckg(idPckg);
+            updateCourier(courierUserName);
             return idPckg;
         }else if(idPckg == -1){ //nema paketa
-            deliveryStarted = false;
-            if(deliveryStarted)
-                stopDelivery(courierUserName);
+            stopDelivery(courierUserName);
             return NOTHING_TO_DRIVE;
         }else if(idPckg == -2){ //kola zauzeta, kurir ne moze da vrsi dostavu
             return OTHER;
         }
         
-        
+        return OTHER;
     }
     
 }
