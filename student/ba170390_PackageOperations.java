@@ -11,6 +11,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
@@ -23,14 +24,13 @@ import rs.etf.sab.operations.PackageOperations;
  */
 public class ba170390_PackageOperations implements PackageOperations {
     
-   // private static int onDelivery = -1;
-   // private static boolean deliveryStarted = false;
+    private static HashMap<String, ba170390_Pair<Integer, Integer>> lastVisited = new HashMap<>();
     
-    public static class ba170390_Pair<Integer, BigDecimal> implements Pair{
-        private final int i;
-        private final BigDecimal bd;
+    public static class ba170390_Pair<T, X> implements Pair{
+        private final T i;
+        private final X bd;
         
-        public ba170390_Pair(int ii, BigDecimal bbdd){
+        public ba170390_Pair(T ii, X bbdd){
             this.i = ii;
             this.bd = bbdd;
         }
@@ -542,6 +542,8 @@ public class ba170390_PackageOperations implements PackageOperations {
             Logger.getLogger(ba170390_PackageOperations.class.getName()).log(Level.SEVERE, null, ex);
         }
         
+        lastVisited.put(courierUserName, new ba170390_Pair<Integer, Integer>(-1, -1));
+        
         return res;
     }
     
@@ -585,17 +587,141 @@ public class ba170390_PackageOperations implements PackageOperations {
         return res;
     }
     
-    public BigDecimal calculateProfit(String courierUserName){
+    public ba170390_Pair<Integer, Integer> getCordForDistritFromOrTo(int idPckg, String direction){
+        ba170390_Pair<Integer, Integer> res = null;
+        int idDistr = -1;
+        String columName = "";
+        int x = -1, y = -1;
+        
+        switch(direction){
+            case "from": columName = "DistrictFrom";
+                break;
+            case "to": columName = "DistrictTo";
+                break;
+        }
+        Connection conn=DB.getInstance().getConnection();
+        String query="select DistrictFrom, DistrictTo from Package IdPckg=?";
+        try (PreparedStatement stmt=conn.prepareStatement(query);){
+            stmt.setInt(1, idPckg);
+            ResultSet rs = stmt.executeQuery();
+            if(rs.next()){
+                idDistr = rs.getInt("columName");
+            }else{
+                return null;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ba170390_PackageOperations.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        //imamo idDistr, sad trazimo koordinate
+        String query1="select xCord, yCord from District where IdDistr=?";
+        try (PreparedStatement stmt1=conn.prepareStatement(query1);){
+            stmt1.setInt(1, idDistr);
+            ResultSet rs1 = stmt1.executeQuery();    
+            if(rs1.next()){
+                x = rs1.getInt("xCord");
+                y = rs1.getInt("yCord");
+                res = new ba170390_Pair<Integer, Integer>(x, y);
+                return res;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ba170390_PackageOperations.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return res;
+    }
+    
+    public BigDecimal calculateProfit(String courierUserName, int idPckg){
          //cena isporuke - trosak voznje
+        int xStart = -1, yStart = -1;
+        int xMiddle = -1, yMiddle = -1;
+        int xEnd = -1, yEnd = -1;
+        BigDecimal profit = BigDecimal.ZERO;
+        
+        ba170390_Pair<Integer, Integer> xyStart = lastVisited.get(courierUserName);
+        if((int)xyStart.getFirstParam() == -1 && (int)xyStart.getSecondParam() == -1){
+            //jos nije bio nigde, polazna tacka je districtFrom, poslednja tacka je districtTo
+            xStart = (int)getCordForDistritFromOrTo(idPckg, "from").getFirstParam();
+            yStart = (int)getCordForDistritFromOrTo(idPckg, "from").getSecondParam();
+            xEnd = (int)getCordForDistritFromOrTo(idPckg, "to").getFirstParam();
+            yEnd = (int)getCordForDistritFromOrTo(idPckg, "to").getSecondParam();
+        }else{
+            //bio je negde, polazna tacka je tacka iz hashmap-e, ide do mesta FROM, potom ide do mesta TO
+            xStart = (int)xyStart.getFirstParam();
+            yStart = (int)xyStart.getSecondParam();
+            xMiddle = (int)getCordForDistritFromOrTo(idPckg, "from").getFirstParam();
+            yMiddle = (int)getCordForDistritFromOrTo(idPckg, "from").getSecondParam();
+            xEnd = (int)getCordForDistritFromOrTo(idPckg, "to").getFirstParam();
+            yEnd = (int)getCordForDistritFromOrTo(idPckg, "to").getSecondParam();          
+        }
+        //mesto TO je poslednje mesto koje je obisao
+        lastVisited.put(courierUserName, new ba170390_Pair<Integer, Integer>(xEnd, yEnd));
+        
+        //racunamo distancu
+        double distance = 0;
+        if(xMiddle== -1 && yMiddle == -1){
+            //ne postoji middle, idemo samo od start do end
+            distance += euclidean(xStart, yStart, xEnd, yEnd);
+        }else{
+            distance += euclidean(xStart, yStart, xMiddle, yMiddle);
+            distance += euclidean(xMiddle, yMiddle, xEnd, yEnd);
+        }
+        
+        //treba nam cena paketa
+        BigDecimal price = BigDecimal.ZERO;
+        Connection conn=DB.getInstance().getConnection();
+        String query="select Price from Package IdPckg=?";
+        try (PreparedStatement stmt=conn.prepareStatement(query);){
+            stmt.setInt(1, idPckg);
+            ResultSet rs = stmt.executeQuery();
+            if(rs.next()){
+                price = rs.getBigDecimal("Price");
+            }else{
+                return null;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ba170390_PackageOperations.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        // treba nam tablica kola koje kurir vozi
+        String carLicence = getCourierCar(courierUserName);
+        
+        //treba nam potrosnja goriva i tip goriva
+        BigDecimal fuelConsumption = BigDecimal.ZERO;
+        int fuelType = -1;
+        String query1="select FuelConsumption, FuelType from Vehicle where LicencePlateNum=?";
+        try (PreparedStatement stmt1=conn.prepareStatement(query1);){
+            stmt1.setString(1, carLicence);
+            ResultSet rs1 = stmt1.executeQuery();     
+            if(rs1.next()){
+                fuelConsumption = rs1.getBigDecimal("FuelConsumption");
+                fuelType = rs1.getInt("FuelType"); 
+            }else{
+                return null;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ba170390_PackageOperations.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        //treba nam cena goriva
+        int fuelPricePerL = 0;
+        switch(fuelType){
+            case 0: fuelPricePerL = 15;
+                break;
+            case 1: fuelPricePerL = 32;
+                break;
+            case 2: fuelPricePerL = 36;
+                break;
+        }
+        
+        BigDecimal fuelCharge = ((BigDecimal.valueOf(distance)).multiply(fuelConsumption)).multiply(BigDecimal.valueOf(fuelPricePerL));
+        profit = price.subtract(fuelCharge);
          
-         
-        return BigDecimal.ZERO;
+        return profit;
     }
     
     
-    public void updateCourier(String courierUserName){
+    public void updateCourier(String courierUserName, int idPckg){
         BigDecimal profit = BigDecimal.ZERO;       
-        profit = calculateProfit(courierUserName);  
+        profit = calculateProfit(courierUserName, idPckg);  
         
         Connection conn=DB.getInstance().getConnection();
         String query="update Courier\n" +
@@ -670,7 +796,7 @@ public class ba170390_PackageOperations implements PackageOperations {
         int idPckg = sortPckgsAndGetFirst(courierUserName, deliveryStarted);
         if(idPckg > 0){ //ima paketa za dostavljanje i kurir moze da ih dostavlja
             deliverPckg(idPckg);
-            updateCourier(courierUserName);
+            updateCourier(courierUserName, idPckg);
             return idPckg;
         }else if(idPckg == -1){ //nema paketa
             stopDelivery(courierUserName);
