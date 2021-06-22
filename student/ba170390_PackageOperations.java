@@ -524,25 +524,27 @@ public class ba170390_PackageOperations implements PackageOperations {
             Logger.getLogger(ba170390_PackageOperations.class.getName()).log(Level.SEVERE, null, ex);
         }
               
-        if(taken == 1){
+        if(taken > 0){
             res = false;
             return res;
         }
         
         
         String query1="update Courier\n" +
-                    "set Status=1\n" +
+                    "set Status=1, Profit=?\n" +
                     "where CourierUsername=?";
         try (PreparedStatement stmt1=conn.prepareStatement(query1);){
-            stmt1.setString(1, courierUserName);
+            stmt1.setBigDecimal(1, BigDecimal.ZERO);
+            stmt1.setString(2, courierUserName);
             stmt1.executeUpdate();     
             res = true;
+            lastVisited.put(courierUserName, new ba170390_Pair<Integer, Integer>(-1, -1));
             return res;
         } catch (SQLException ex) {
             Logger.getLogger(ba170390_PackageOperations.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        lastVisited.put(courierUserName, new ba170390_Pair<Integer, Integer>(-1, -1));
+        
         
         return res;
     }
@@ -603,12 +605,18 @@ public class ba170390_PackageOperations implements PackageOperations {
                 break;
         }
         Connection conn=DB.getInstance().getConnection();
-        String query="select DistrictFrom, DistrictTo from Package IdPckg=?";
+        String query="select DistrictFrom, DistrictTo from Package where IdPckg=?";
         try (PreparedStatement stmt=conn.prepareStatement(query);){
             stmt.setInt(1, idPckg);
             ResultSet rs = stmt.executeQuery();
             if(rs.next()){
-                idDistr = rs.getInt("columName");
+                idDistr = rs.getInt(columName);
+               /* switch(columName){
+                    case "DistrictFrom": idDistr = rs.getInt("DistrictFrom");
+                        break;
+                    case "DistrictTo": idDistr = rs.getInt("DistrictTo");
+                        break;
+                }*/
             }else{
                 return null;
             }
@@ -671,7 +679,7 @@ public class ba170390_PackageOperations implements PackageOperations {
         //treba nam cena paketa
         BigDecimal price = BigDecimal.ZERO;
         Connection conn=DB.getInstance().getConnection();
-        String query="select Price from Package IdPckg=?";
+        String query="select Price from Package where IdPckg=?";
         try (PreparedStatement stmt=conn.prepareStatement(query);){
             stmt.setInt(1, idPckg);
             ResultSet rs = stmt.executeQuery();

@@ -42,19 +42,5 @@ public class StudentMain {
         TestRunner.runTests();
     }
     
-    
-    
-  /* public static void main(String[] args) {
-        
-        System.out.println("------------------------------------------------------------");
-        ba170390_UserOperations u = new ba170390_UserOperations();
-        ba170390_VehicleOperations v = new ba170390_VehicleOperations();
-        ba170390_CourierRequestOperation cr = new ba170390_CourierRequestOperation();
-       ba170390_CityOperations c = new ba170390_CityOperations();
-       ba170390_DistrictOperations d = new ba170390_DistrictOperations();
-       ba170390_PackageOperations p = new ba170390_PackageOperations();
- 
-         p.acceptAnOffer(30) ;      
-      
-    }*/
+  
 }
