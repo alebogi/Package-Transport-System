@@ -725,7 +725,7 @@ public class ba170390_PackageOperations implements PackageOperations {
         
         Connection conn=DB.getInstance().getConnection();
         String query="update Courier\n" +
-                    "set NumOfDeliveredPckgs=NumOfDeliveredPckgs+1, Profit=?\n" +
+                    "set NumOfDeliveredPckgs=NumOfDeliveredPckgs+1, Profit=Profit+?\n" +
                     "where CourierUsername=?";
         try (PreparedStatement stmt=conn.prepareStatement(query);){
             stmt.setBigDecimal(1, profit);
