@@ -45,9 +45,7 @@ CREATE TABLE [Courier]
 	[NumOfDeliveredPckgs] integer  NULL 
 	CONSTRAINT [zero_205055169]
 		 DEFAULT  0,
-	[Profit]             integer  NULL 
-	CONSTRAINT [zero_1095524606]
-		 DEFAULT  0,
+	[Profit]             decimal(10,3)  NULL ,
 	[Status]             integer  NULL 
 	CONSTRAINT [zero_1329484285]
 		 DEFAULT  0

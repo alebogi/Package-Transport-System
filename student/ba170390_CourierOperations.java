@@ -96,22 +96,24 @@ public class ba170390_CourierOperations implements CourierOperations {
 
     @Override
     public BigDecimal getAverageCourierProfit(int numberOfDeliveries) {
-        int sum = 0;
+        BigDecimal sum = BigDecimal.ZERO;
+        BigDecimal profit = BigDecimal.ZERO;
         int cnt = 0;
-        BigDecimal avg = new BigDecimal(0.0);
+        BigDecimal avg = BigDecimal.ZERO;
         
         Connection conn=DB.getInstance().getConnection();
-        String query="select NumOfDeliveredPckgs from Courier";
+        String query="select NumOfDeliveredPckgs, Profit from Courier";
         try (PreparedStatement stmt=conn.prepareStatement(query);){ 
             ResultSet rs = stmt.executeQuery();
             while(rs.next()){
-                int tmp = rs.getInt(1);
+                int tmp = rs.getInt("NumOfDeliveredPckgs");
+                profit = rs.getBigDecimal("Profit");
                 if(tmp >= numberOfDeliveries){
-                    sum += tmp;
+                    sum = sum.add(profit);
                     cnt++;
                 }               
             }
-            avg = new BigDecimal(sum / cnt);
+            avg = sum.divide(BigDecimal.valueOf(cnt));
             return avg;
         } catch (SQLException ex) {
             Logger.getLogger(ba170390_CourierOperations.class.getName()).log(Level.SEVERE, null, ex);
