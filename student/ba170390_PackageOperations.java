@@ -229,8 +229,8 @@ public class ba170390_PackageOperations implements PackageOperations {
             if(rsGetOffer.next()){
                 courier = rsGetOffer.getString("CourierUsername");        
                 pricePercentage = rsGetOffer.getBigDecimal("PricePercentage");
-                price = calculatePrice(idPckg, pricePercentage);
                 idPckg = rsGetOffer.getInt("IdPckg");
+                price = calculatePrice(idPckg, pricePercentage);              
             }else{
                 return false;
             }
@@ -435,8 +435,8 @@ public class ba170390_PackageOperations implements PackageOperations {
             Logger.getLogger(ba170390_PackageOperations.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        if(list.isEmpty())
-            return null;
+        //if(list.isEmpty())
+        //    return null;
         return list;
     }
 
@@ -455,8 +455,8 @@ public class ba170390_PackageOperations implements PackageOperations {
             Logger.getLogger(ba170390_PackageOperations.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        if(list.isEmpty())
-            return null;
+       // if(list.isEmpty())
+        //    return null;
         
         return list;
     }
@@ -476,8 +476,8 @@ public class ba170390_PackageOperations implements PackageOperations {
             Logger.getLogger(ba170390_PackageOperations.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        if(list.isEmpty())
-            return null;
+       // if(list.isEmpty())
+        //    return null;
         
         return list;
     }

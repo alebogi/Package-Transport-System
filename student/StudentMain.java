@@ -19,7 +19,7 @@ import rs.etf.sab.tests.TestRunner;
 
 public class StudentMain {
 
-   /* public static void main(String[] args) {
+    public static void main(String[] args) {
         CityOperations cityOperations = new ba170390_CityOperations(); 
         DistrictOperations districtOperations = new ba170390_DistrictOperations(); 
         CourierOperations courierOperations = new ba170390_CourierOperations(); 
@@ -40,8 +40,10 @@ public class StudentMain {
                 packageOperations);
 
         TestRunner.runTests();
-    }*/
+    }
     
+    
+   /* 
    public static void main(String[] args) {
         
         System.out.println("------------------------------------------------------------");
@@ -53,18 +55,6 @@ public class StudentMain {
        ba170390_PackageOperations p = new ba170390_PackageOperations();
  
                 
-       
-        final int idCity = c.insertCity("Belgrade", "11000");
-        
-        final int districtFrom = d.insertDistrict("Palilula", idCity, 10, 10);
-        final int districtTo =d.insertDistrict("Vozdovac", idCity, 10, 10);
-        final String username = "rope";
-        final String firstName = "Pero";
-        final String lastName = "Simic";
-        final String password = "tralalalala123";
-        u.insertUser(username, firstName, lastName, password);
-        final BigDecimal weight = new BigDecimal(0.2);
-        p.insertPackage(districtFrom, districtTo, username, 1, weight);
-        
-    }
+      
+    }*/
 }
