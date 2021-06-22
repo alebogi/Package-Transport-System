@@ -45,23 +45,26 @@ public class StudentMain {
    public static void main(String[] args) {
         
         System.out.println("------------------------------------------------------------");
-        ba170390_UserOperations obj = new ba170390_UserOperations();
+        ba170390_UserOperations u = new ba170390_UserOperations();
         ba170390_VehicleOperations v = new ba170390_VehicleOperations();
         ba170390_CourierRequestOperation cr = new ba170390_CourierRequestOperation();
-       
+       ba170390_CityOperations c = new ba170390_CityOperations();
+       ba170390_DistrictOperations d = new ba170390_DistrictOperations();
+       ba170390_PackageOperations p = new ba170390_PackageOperations();
  
                 
-        final String courierUsername = "svetkis";
-        final String firstName = "Svetislav";
-        final String lastName = "Kisprdilov";
-        final String password = "sisatovac123";
-        obj.insertUser(courierUsername, firstName, lastName, password);
-        final String licencePlate = "BG323WE";
-        final int fuelType = 0;
-        final BigDecimal fuelConsumption = new BigDecimal(8.3);
-        v.insertVehicle(licencePlate, fuelType, fuelConsumption);
-        cr.insertCourierRequest(courierUsername, licencePlate);
-        cr.grantRequest(courierUsername);
+       
+        final int idCity = c.insertCity("Belgrade", "11000");
+        
+        final int districtFrom = d.insertDistrict("Palilula", idCity, 10, 10);
+        final int districtTo =d.insertDistrict("Vozdovac", idCity, 10, 10);
+        final String username = "rope";
+        final String firstName = "Pero";
+        final String lastName = "Simic";
+        final String password = "tralalalala123";
+        u.insertUser(username, firstName, lastName, password);
+        final BigDecimal weight = new BigDecimal(0.2);
+        p.insertPackage(districtFrom, districtTo, username, 1, weight);
         
     }
 }

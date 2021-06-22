@@ -23,6 +23,9 @@ import rs.etf.sab.operations.PackageOperations;
  */
 public class ba170390_PackageOperations implements PackageOperations {
     
+   // private static int onDelivery = -1;
+    private static boolean deliveryStarted = false;
+    
     public static class ba170390_Pair<Integer, BigDecimal> implements Pair{
         private final int i;
         private final BigDecimal bd;
@@ -42,6 +45,21 @@ public class ba170390_PackageOperations implements PackageOperations {
             return bd;
         }
         
+    }
+    
+    public int getFuelPrice(int fuelType){
+        int res = 0;
+        switch(fuelType){
+            case 0: res = 15;
+                break;
+           case 1: res = 32;
+                break;
+           case 2: res = 36;
+               break;
+           default:
+               break;
+        }
+        return res;
     }
 
     @Override
@@ -72,9 +90,25 @@ public class ba170390_PackageOperations implements PackageOperations {
 
     @Override
     public int insertTransportOffer(String couriersUserName, int packageId, BigDecimal pricePercentage) {
-        int id = -1;
+        int id = -1; int status = -1;
         
         Connection conn=DB.getInstance().getConnection();
+        
+        String query1=" select Status from Courier where CourierUsername=?";
+        try (PreparedStatement stmt1=conn.prepareStatement(query1, PreparedStatement.RETURN_GENERATED_KEYS);){
+            stmt1.setString(1, couriersUserName);
+            ResultSet rs = stmt1.executeQuery();
+            if(rs.next()){
+                status = rs.getInt(1);
+            }
+        } catch (SQLException ex) {
+            //Logger.getLogger(ba170390_PackageOperations.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        if(status != 0)
+            return -1;
+        
+        
         String query="insert into TransportOffer(CourierUsername, IdPckg, PricePercentage) values (?, ?, ?)";
         try (PreparedStatement stmt=conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);){
             stmt.setString(1, couriersUserName);
@@ -429,12 +463,145 @@ public class ba170390_PackageOperations implements PackageOperations {
 
     @Override
     public List<Integer> getDrive(String courierUsername) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        List<Integer> list = new LinkedList<>();
+        
+        Connection conn=DB.getInstance().getConnection();
+        String query="select IdPckg from Package where Status=2";
+        try (PreparedStatement stmt=conn.prepareStatement(query);){
+            ResultSet rs = stmt.executeQuery();
+            while(rs.next()){
+                list.add(rs.getInt(1));
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ba170390_PackageOperations.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        if(list.isEmpty())
+            return null;
+        
+        return list;
+    }
+    
+    public boolean startDeliveryForCourier(String courierUserName){
+        boolean res = false;
+        
+        Connection conn=DB.getInstance().getConnection();
+        
+        //proveriti da li neko vec vozi kola, ako vozi ne moze da se startuje i vrati false
+        if(1<2){
+            res = false;
+            return res;
+        }
+        
+        
+        String query1="update Courier\n" +
+                    "set Status=1\n" +
+                    "where CourierUsername=?";
+        try (PreparedStatement stmt1=conn.prepareStatement(query1);){
+            stmt1.setString(1, courierUserName);
+            stmt1.executeUpdate();     
+            res = true;
+            return res;
+        } catch (SQLException ex) {
+            Logger.getLogger(ba170390_PackageOperations.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return res;
+    }
+    
+    /**
+     * sort pckgs by acceptance time -fcfs
+     * @return first in the list
+     */
+    public int sortPckgsAndGetFirst(String courierUserName){
+        int res = -1;
+        
+        Connection conn=DB.getInstance().getConnection();
+        
+        if(!deliveryStarted){ //svim paketima za datog kurira stavimo da su pokupljeni (status=2), posto je voznja pocela
+            deliveryStarted = true;
+            if(!startDeliveryForCourier(courierUserName)){
+                return -1;
+            }
+            String query1="update Package\n" +
+                    "set Status=2\n" +
+                    "where CourierUsername=?";
+            try (PreparedStatement stmt1=conn.prepareStatement(query1);){
+                stmt1.setString(1, courierUserName);
+                stmt1.executeUpdate();          
+            } catch (SQLException ex) {
+                Logger.getLogger(ba170390_PackageOperations.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
+        
+        String query="select IdPckg from Package where Status=2 and CourierUsername=? order by AcceptanceTime asc";
+        try (PreparedStatement stmt=conn.prepareStatement(query);){
+            stmt.setString(1, courierUserName);
+            ResultSet rs = stmt.executeQuery();
+            if(rs.next()){
+                res = rs.getInt("IdPckg");
+            }else{
+                return -1;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ba170390_PackageOperations.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return res;
+    }
+    
+    public void deliverPckg(int idPckg){
+        Connection conn=DB.getInstance().getConnection();
+        String query1="update Package\n" +
+                    "set Status=3\n" +
+                    "where IdPckg=?";
+        try (PreparedStatement stmt1=conn.prepareStatement(query1);){
+            stmt1.setInt(1, idPckg);
+            stmt1.executeUpdate();          
+        } catch (SQLException ex) {
+            Logger.getLogger(ba170390_PackageOperations.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
+    public void stopDelivery(String courierUserName){
+        Connection conn=DB.getInstance().getConnection();
+        String query1="update Courier\n" +
+                    "set Status=0\n" +
+                    "where CourierUsername=?";
+        try (PreparedStatement stmt1=conn.prepareStatement(query1);){
+            stmt1.setString(1, courierUserName);
+            stmt1.executeUpdate();          
+        } catch (SQLException ex) {
+            Logger.getLogger(ba170390_PackageOperations.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
     @Override
     public int driveNextPackage(String courierUserName) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        final int NOTHING_TO_DRIVE = -1;
+        final int OTHER = -2;
+        
+        if(!deliveryStarted){ //drive hasnt started yet
+            
+        }else{ //drive already started
+            
+        }
+        
+        int idPckg = sortPckgsAndGetFirst(courierUserName);
+        if(idPckg > 0){ //ima paketa za dostavljanje i kurir moze da ih dostavlja
+            deliverPckg(idPckg);
+            return idPckg;
+        }else if(idPckg == -1){ //nema paketa
+            deliveryStarted = false;
+            if(deliveryStarted)
+                stopDelivery(courierUserName);
+            return NOTHING_TO_DRIVE;
+        }else if(idPckg == -2){ //kola zauzeta, kurir ne moze da vrsi dostavu
+            return OTHER;
+        }
+        
+        
     }
     
 }
