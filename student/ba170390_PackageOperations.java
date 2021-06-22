@@ -61,6 +61,19 @@ public class ba170390_PackageOperations implements PackageOperations {
         }
         return res;
     }
+    
+    public void updateUser(String userName){
+        Connection conn=DB.getInstance().getConnection();
+        String query="update [User]\n" +
+                    "set NumOfSentPckgs = NumOfSentPckgs + 1\n" +
+                    "where Username=";
+        try (PreparedStatement stmt=conn.prepareStatement(query);){
+            stmt.setString(1, userName);
+            stmt.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(ba170390_PackageOperations.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 
     @Override
     public int insertPackage(int districtFrom, int districtTo, String userName, int packageType, BigDecimal weight) {
