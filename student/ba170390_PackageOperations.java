@@ -482,13 +482,49 @@ public class ba170390_PackageOperations implements PackageOperations {
         return list;
     }
     
+    public String getCourierCar(String courierUserName){
+        String res = "";
+        Connection conn=DB.getInstance().getConnection();
+        String query="select LicencePlateNum from Courier where CourierUsername=?";
+        try (PreparedStatement stmt=conn.prepareStatement(query);){
+            stmt.setString(1, courierUserName);
+            ResultSet rs = stmt.executeQuery();
+            if(rs.next()){
+                res = rs.getString("LicencePlateNum");
+            }else{
+                return "";
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ba170390_PackageOperations.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return res;
+    }
+    
     public boolean startDeliveryForCourier(String courierUserName){
         boolean res = false;
         
         Connection conn=DB.getInstance().getConnection();
         
         //proveriti da li neko vec vozi kola, ako vozi ne moze da se startuje i vrati false
-        if(1<2){
+        String courierLicencePlate = getCourierCar(courierUserName);
+        int taken = 0;
+        String query="select count(CourierUsername) as Taken\n" +
+                    "from Courier\n" +
+                    "where Status=1 and LicencePlateNum=?";
+        try (PreparedStatement stmt=conn.prepareStatement(query);){
+            stmt.setString(1, courierLicencePlate);
+            ResultSet rs = stmt.executeQuery();
+            if(rs.next()){
+                taken = rs.getInt("Taken");
+            }else{
+                return false; //greska, not gonna happen
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ba170390_PackageOperations.class.getName()).log(Level.SEVERE, null, ex);
+        }
+              
+        if(taken == 1){
             res = false;
             return res;
         }
@@ -509,24 +545,7 @@ public class ba170390_PackageOperations implements PackageOperations {
         return res;
     }
     
-    public String getCourierCar(String courierUserName){
-        String res = "";
-        Connection conn=DB.getInstance().getConnection();
-        String query="select LicencePlateNum from Courier where CourierUsername=?";
-        try (PreparedStatement stmt=conn.prepareStatement(query);){
-            stmt.setString(1, courierUserName);
-            ResultSet rs = stmt.executeQuery();
-            if(rs.next()){
-                res = rs.getString("LicencePlateNum");
-            }else{
-                return "";
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(ba170390_PackageOperations.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        return res;
-    }
+   
     
  
     public int sortPckgsAndGetFirst(String courierUserName, int deliveryStarted){
