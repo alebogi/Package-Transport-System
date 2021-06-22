@@ -559,9 +559,12 @@ public class ba170390_PackageOperations implements PackageOperations {
             if(!startDeliveryForCourier(courierUserName)){ //pocni voznju, ako se vrati false nemoguce je poceti voznju trenutno
                 return -1;
             }
-            String query1="update Package\n" +
-                    "set Status=2\n" +
-                    "where CourierUsername=?";
+            String query1="ALTER TABLE Package DISABLE TRIGGER [TR_TransportOffer_DeleteAllOffersForPackage]\n" +
+                            "update Package\n" +
+                            "set Status=2\n" +
+                            "where CourierUsername=?\n" +
+                            "ALTER TABLE Package ENABLE TRIGGER [TR_TransportOffer_DeleteAllOffersForPackage]";
+  
             try (PreparedStatement stmt1=conn.prepareStatement(query1);){
                 stmt1.setString(1, courierUserName);
                 stmt1.executeUpdate();          
@@ -576,7 +579,7 @@ public class ba170390_PackageOperations implements PackageOperations {
             stmt.setString(1, courierUserName);
             ResultSet rs = stmt.executeQuery();
             if(rs.next()){
-                res = rs.getInt("IdPckg");
+                res = rs.getInt(1);
             }else{
                 return -1;
             }

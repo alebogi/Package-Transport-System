@@ -43,8 +43,8 @@ public class StudentMain {
     }
     
     
-   /* 
-   public static void main(String[] args) {
+    
+  /* public static void main(String[] args) {
         
         System.out.println("------------------------------------------------------------");
         ba170390_UserOperations u = new ba170390_UserOperations();
@@ -54,7 +54,7 @@ public class StudentMain {
        ba170390_DistrictOperations d = new ba170390_DistrictOperations();
        ba170390_PackageOperations p = new ba170390_PackageOperations();
  
-                
+         p.acceptAnOffer(30) ;      
       
     }*/
 }
